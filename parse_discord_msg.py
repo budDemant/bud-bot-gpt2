@@ -21,7 +21,8 @@ def main():
         if timestamp > threshold:
             filtered.append(msg)
     
-    print(filtered)
+    with open("new_messages.json", "w") as file:
+        json.dump(filtered, file, indent=4)
     
     
     

@@ -9,3 +9,6 @@ sample_msg_test
 # Text files for personal goals
 parse_steps.txt
 personality.txt
+
+# JSON files (Discord msg data)
+*.json

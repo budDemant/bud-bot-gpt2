@@ -13,9 +13,18 @@ def main():
     with open('filter_date_test/messages.json', 'r') as f:
         messages = json.load(f)
     
+    threshold = datetime(2023, 5, 30)
+    filtered = []
     for msg in messages:
         timestamp = datetime.strptime(msg["Timestamp"], "%Y-%m-%d %H:%M:%S")
-        print(timestamp)
+        
+        if timestamp > threshold:
+            filtered.append(msg)
+    
+    print(filtered)
+    
+    
+    
         
 
 

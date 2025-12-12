@@ -12,7 +12,11 @@ def filter_date(year):
 def main():
     with open('filter_date_test/messages.json', 'r') as f:
         messages = json.load(f)
-    print(messages)
+    
+    for msg in messages:
+        timestamp = datetime.strptime(msg["Timestamp"], "%Y-%m-%d %H:%M:%S")
+        print(timestamp)
+        
 
 
 if __name__ == "__main__":

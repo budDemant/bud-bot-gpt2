@@ -55,19 +55,19 @@ def filter_emojis(messages):
 def main():
     # with open('filter_emoji_test/messages.json', 'r', encoding='utf-8') as f: # Windows uses default cp1252 encoding, which can't handle Unicode/special chars
     #     messages = json.load(f)
-    
-    with open('Messages_test/folder_3/channel.json', 'r') as f:
-        channel_info = json.load(f)
+    parent_folder = os.listdir("Messages_test")
+    for folder in parent_folder:
+        with open(f'Messages_test/{folder}/channel.json', 'r') as f:
+            channel_info = json.load(f)
         
-    guild_name = channel_info["guild"].get("name").lower()
-    print(guild_name)
-    
-    
-    guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
-    
-    
-    if guild_name in guild_list:
-        print("guild name found in list")
+        guild_name = channel_info["guild"].get("name").lower()
+        
+        
+        guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
+        
+        
+        if guild_name in guild_list:
+            print(f"{guild_name} found in list")
     
     
     

@@ -17,22 +17,34 @@ def filter_date_time(messages, start_date=None, end_date=None):
     return filtered
 
 
+def filter_words_phrases(messages, word_list):
+    word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r')]
+    filtered = []
+    for msg in messages:
+        if any(word in msg["Contents"].lower() for word in word_list):
+            filtered.append(msg)
+    
+    return filtered
+
+def filter_emojis(messages):
+    pass
+            
+            
 def main():
-    with open('filter_date_test/messages.json', 'r') as f:
+    with open('sample_msg_test/messages.json', 'r') as f:
         messages = json.load(f)
     
-    start_date = datetime(2023, 5, 30)
-    end_date = datetime(2024, 1, 12)
-   
-    msg_date_filtered = filter_date_time(messages, start_date, end_date)
+    word_list = open(f'filtered_words.txt', 'r')
+    msg_words_filtered = filter_words_phrases(messages, word_list)
+    
+    # start_date = datetime(2023, 5, 30)
+    # end_date = datetime(2024, 1, 12)
+    # msg_date_filtered = filter_date_time(messages, start_date, end_date)
     
     with open("new_messages.json", "w") as f:
-        json.dump(msg_date_filtered, f, indent=4)
+        json.dump(msg_words_filtered, f, indent=4)
     
     
     
-        
-
-
 if __name__ == "__main__":
     main()

@@ -39,11 +39,13 @@ def filter_emojis(messages):
     return filtered
 
 
-#TODO: Might need to change this to account for DMs later... (check for type)
-#TODO: check for servers that don't exist anymore
 '''Input a list of guild names and channel info dict, returns True if guild name matches'''
 def filter_guilds(channel_info, guild_list):
-    guild_name = channel_info["guild"].get("name").lower()
+    guild = channel_info.get("guild")
+    if not guild:
+        return False  # No guild (DM or deleted server), so skip it
+    
+    guild_name = guild.get("name", "").lower()
     return guild_name in guild_list
 
 

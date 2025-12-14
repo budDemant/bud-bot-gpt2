@@ -49,9 +49,16 @@ def filter_guilds(channel_info, guild_list):
     return guild_name in guild_list
 
 #TODO: there's a deleted group dm that I want... what if someone wants a deleted guild?
-def filter_dms(channel_info, dm_list):
+def filter_dms(channel_info, index_info, dm_list):
+    index_list = []
+    for key, value in index_info.items():
+        for line in dm_list:
+           if line in value: # compare if usernames match
+               index_list.append(key)
+    print(index_list)
+    id = channel_info.get("id")
     type = channel_info.get("type")
-    if "DM" in type:
+    if "DM" in type and id in index_list:
         return True
     
     
@@ -62,41 +69,54 @@ def main():
     '''DMs'''
     dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
     
-    # parent_folder = Path("dms_test")
-    # new_folder = Path('dms_filtered')
+    parent_folder = Path("dms_test")
+    new_folder = Path('dms_filtered')
     
-    # for folder in parent_folder.iterdir():
-    #     with open(f'{folder}/channel.json', 'r') as f:
-    #         channel_info = json.load(f)
-        
-    #     if filter_dms(channel_info, dm_list):
-    #         destination = new_folder / folder
-    #         shutil.copytree(folder, destination)
-    
-    # NEW OBJECTIVE: fetch id number from index.json
     with open('index.json', 'r') as f:
         index_info = json.load(f)
-        
-    with open('dms_test/dm_1/channel.json', 'r') as f:
-        channel_info = json.load(f)
-        
-    channel_id = channel_info.get("id") # or channel_info["id"]
     
-    for id in index_info:
-        if channel_id in id:
-            print(id)
+    for folder in parent_folder.iterdir():
+        with open(f'{folder}/channel.json', 'r') as f:
+            channel_info = json.load(f)
+        
+        if filter_dms(channel_info, index_info, dm_list):
+            destination = new_folder / folder
+            shutil.copytree(folder, destination)
+    
+    
+    
+    # with open('index.json', 'r') as f:
+    #     index_info = json.load(f)
+        
+    # with open('dms_test/dm_1/channel.json', 'r') as f:
+    #     channel_info = json.load(f)
+        
+    # channel_id = channel_info.get("id") # or channel_info["id"]
+    
+    # for id in index_info:
+    #     if channel_id in id:
+    #         print(id)
             
             
-    index_list = []
-    for key, value in index_info.items():
-        for line in dm_list:
-           if line in value: # compare if usernames match
-               index_list.append((key,value))
-    print(index_list)
+    # index_list = []
+    # for key, value in index_info.items():
+    #     for line in dm_list:
+    #        if line in value: # compare if usernames match
+    #            index_list.append((key, value))
+    # print(index_list)
     
+    # Now just copy every channel with those ids into a new messages folder
     
+    '''Searching for particular folder'''
+    # parent_folder = Path("Messages")
     
-    
+    # for folder in parent_folder.iterdir():
+    #     if folder.is_dir():
+    #         with open(f'{folder}/channel.json', 'r') as f:
+    #             channel_info = json.load(f)
+    #         name = channel_info.get("name")
+    #         if name == "Book Club":
+    #             print(folder)
     
     
     

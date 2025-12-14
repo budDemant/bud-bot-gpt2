@@ -53,9 +53,8 @@ def filter_dms(channel_info, index_info, dm_list):
     index_list = []
     for key, value in index_info.items():
         for line in dm_list:
-           if line in value: # compare if usernames match
+           if line.strip().lower() in value.strip().lower(): # compare if usernames match
                index_list.append(key)
-    print(index_list)
     id = channel_info.get("id")
     type = channel_info.get("type")
     if "DM" in type and id in index_list:
@@ -67,6 +66,7 @@ def filter_dms(channel_info, index_info, dm_list):
 def main():
     
     '''DMs'''
+    #TODO: index_list has many repeats because of main entry point (doesn't affect functionality)
     dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
     
     parent_folder = Path("dms_test")
@@ -97,13 +97,14 @@ def main():
     #     if channel_id in id:
     #         print(id)
             
-            
+    
     # index_list = []
     # for key, value in index_info.items():
     #     for line in dm_list:
-    #        if line in value: # compare if usernames match
-    #            index_list.append((key, value))
+    #        if line.strip().lower() in value.strip().lower(): # compare if usernames match
+    #            index_list.append(value)
     # print(index_list)
+    
     
     # Now just copy every channel with those ids into a new messages folder
     

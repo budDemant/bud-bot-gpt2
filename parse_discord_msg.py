@@ -39,35 +39,30 @@ def filter_emojis(messages):
     return filtered
 
 
-#TODO: Might need to change this to account for DMs later...
-'''Input a list of guild names, returns a new Messages folder called Messages_new, which contains folders
-    of channel.json and messages.json that contain the right guild names'''
-def filter_guilds(guild_list):
-    parent_folder = Path("Messages_test")
-    new_folder = Path('Messages_filtered')
-    for folder in parent_folder.iterdir():
-        with open(f'{folder}/channel.json', 'r') as f:
-            channel_info = json.load(f)
-            
-        guild_name = channel_info["guild"].get("name").lower()
-        
-        if guild_name in guild_list:
-            # print(f"{guild_name} found in list")
-            destination = new_folder / folder
-            shutil.copytree(folder, destination)
+#TODO: Might need to change this to account for DMs later... (check for type)
+#TODO: check for servers that don't exist anymore
+'''Input a list of guild names and channel info dict, returns True if guild name matches'''
+def filter_guilds(channel_info, guild_list):
+    guild_name = channel_info["guild"].get("name").lower()
+    return guild_name in guild_list
+
 
             
 def main():
     
-    
-    
-    
-    
-    
     '''Guilds/Servers'''  
     guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
+    
+    parent_folder = Path("Messages_test")
+    new_folder = Path('Messages_filtered')
+    
+    for folder in parent_folder.iterdir():
+        with open(f'{folder}/channel.json', 'r') as f:
+            channel_info = json.load(f)
         
-    filter_guilds(guild_list)
+        if filter_guilds(channel_info, guild_list):
+            destination = new_folder / folder
+            shutil.copytree(folder, destination)
  
     
     '''Emojis'''

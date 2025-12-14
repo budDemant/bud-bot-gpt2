@@ -38,77 +38,37 @@ def filter_emojis(messages):
             filtered.append(msg_copy)
     return filtered
 
-# Include only messages from the text file of guild/server names
-# So this function is looking inside each folder's channel.json and checking for the "guild: {name:}" key
 
-# Might need to change this to account for DMs later...
+#TODO: Might need to change this to account for DMs later...
 '''Input a list of guild names, returns a new Messages folder called Messages_new, which contains folders
     of channel.json and messages.json that contain the right guild names'''
-#TODO: maybe switch from os to Path from pathlib
 def filter_guilds(guild_list):
-    parent_folder = os.listdir("Messages_test")
-    
-    new_folder = "Messages_new"
-    for folder in parent_folder:
-        with open(f'Messages_test/{folder}/channel.json', 'r') as f:
-            channel_info = json.load(f)
-        guild_name = channel_info["guild"].get("name").lower()
-        if guild_name in guild_list:
-            combined_path = os.path.join(new_folder,folder)
-
-    return combined_path
-
-            
-def main():
-      
-    guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
-        
-    # parent_folder = list(Path("Messages_test").iterdir())
     parent_folder = Path("Messages_test")
     new_folder = Path('Messages_filtered')
-    
     for folder in parent_folder.iterdir():
         with open(f'{folder}/channel.json', 'r') as f:
             channel_info = json.load(f)
-        
+            
         guild_name = channel_info["guild"].get("name").lower()
         
         if guild_name in guild_list:
-            print(f"{guild_name} found in list")
+            # print(f"{guild_name} found in list")
             destination = new_folder / folder
             shutil.copytree(folder, destination)
-    
-    
 
-    # Set the path to the parent folder
-    folder = Path('Messages_test')
-    copy_folder = Path('Messages_new')
-    
-    # Iterate through the child folders inside the parent folder
-    for child_folder in folder.iterdir():
-        print(child_folder.name)  # This will print just the name of the folder
-            # Now you can access the files within each child folder
-        destination = copy_folder / child_folder
-        shutil.copytree(child_folder, destination)
-        # for file in child_folder.iterdir():
-        #     print(f"  {file.name}")
             
-  
+def main():
+    
+    
+    
+    
+    
+    
+    '''Guilds/Servers'''  
+    guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
         
-
-    '''pathlib example'''
-    # parent = Path('parent_folder')
-    # child = Path('child_folder')
-
-    # # Copy files using shutil.copy2 for preserving metadata
-    # for file_path in child.iterdir():
-    #     if file_path.is_file():
-    #         destination = parent / file_path.name
-    #         shutil.copy2(file_path, destination)
-    
-    # Output: puts all contents of child_folder in parent_folder
-    
-    
+    filter_guilds(guild_list)
+ 
     
     '''Emojis'''
     # with open('filter_emoji_test/messages.json', 'r', encoding='utf-8') as f: # Windows uses default cp1252 encoding, which can't handle Unicode/special chars

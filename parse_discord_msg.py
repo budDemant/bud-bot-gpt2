@@ -48,24 +48,52 @@ def filter_guilds(channel_info, guild_list):
     guild_name = guild.get("name", "").lower()
     return guild_name in guild_list
 
+#TODO: there's type DM and type GROUP_DM
+#TODO: there's a deleted group dm that I want... what if someone wants a deleted guild?
+def filter_dms(channel_info, dm_list):
+    type = channel_info.get("type")
+    if "DM" in type:
+        return True
+    
 
             
 def main():
     
-    '''Guilds/Servers'''  
-    guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
+    '''DMs'''
+    dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
     
-    parent_folder = Path("Messages_test")
-    new_folder = Path('Messages_filtered')
+    parent_folder = Path("dms_test")
+    new_folder = Path('dms_filtered')
     
     for folder in parent_folder.iterdir():
         with open(f'{folder}/channel.json', 'r') as f:
             channel_info = json.load(f)
         
-        if filter_guilds(channel_info, guild_list):
+        if filter_dms(channel_info, dm_list):
             destination = new_folder / folder
             shutil.copytree(folder, destination)
- 
+    
+    
+    
+    
+    
+    
+    
+    
+    #TODO: handle index.json (it's a file, not folder)???
+    '''Guilds/Servers'''  
+    # guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
+    
+    # parent_folder = Path("Messages_test")
+    # new_folder = Path('Messages_filtered')
+    
+    # for folder in parent_folder.iterdir():
+    #     with open(f'{folder}/channel.json', 'r') as f:
+    #         channel_info = json.load(f)
+        
+    #     if filter_guilds(channel_info, guild_list):
+    #         destination = new_folder / folder
+    #         shutil.copytree(folder, destination)
     
     '''Emojis'''
     # with open('filter_emoji_test/messages.json', 'r', encoding='utf-8') as f: # Windows uses default cp1252 encoding, which can't handle Unicode/special chars

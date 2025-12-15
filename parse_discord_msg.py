@@ -3,6 +3,7 @@ from datetime import datetime
 import emoji
 from pathlib import Path
 import shutil
+import re
 
 #TODO: use argparse with a custom type format for CLI to handle and convert date/time user input
 def filter_date_time(messages, start_date=None, end_date=None):
@@ -22,7 +23,8 @@ def filter_date_time(messages, start_date=None, end_date=None):
 def filter_words_phrases(messages, word_list):
     filtered = []
     for msg in messages:
-        if any(word in msg["Contents"].lower() for word in word_list):
+        content_lower = msg["Contents"].lower()
+        if any(re.search(r'\b' + re.escape(word) + r'\b', content_lower) for word in word_list):
             filtered.append(msg)
     
     return filtered

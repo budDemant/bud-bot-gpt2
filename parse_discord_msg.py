@@ -88,7 +88,7 @@ def main():
     
     # Now just copy every channel with those ids into a new messages folder
     
-    '''Searching for deleted DMs'''
+    '''Searching for deleted Group DMs'''
     parent_folder = Path("Messages")
     
     for folder in parent_folder.iterdir():
@@ -97,16 +97,32 @@ def main():
         
         with open(f'{folder}/channel.json', 'r') as f:
             channel_info = json.load(f)
+            
+        type = channel_info.get("type")
+        name = channel_info.get("name")
         
-        recipients = channel_info.get("recipients")
-        if not recipients: # guilds don't have this key
-            continue
+        if type == "GROUP_DM" and not name:
+            print(folder)
+    
+    '''Searching for deleted DMs'''
+    # parent_folder = Path("Messages")
+    
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir(): # skip index.json
+    #         continue
         
-        name = recipients[0]
-        if "Deleted User" not in name:
-            continue
+    #     with open(f'{folder}/channel.json', 'r') as f:
+    #         channel_info = json.load(f)
         
-        print(folder)
+    #     recipients = channel_info.get("recipients")
+    #     if not recipients: # guilds don't have this key
+    #         continue
+        
+    #     name = recipients[0]
+    #     if "Deleted User" not in name:
+    #         continue
+        
+    #     print(folder)
     
     '''Searching for particular folder'''
     # parent_folder = Path("Messages")

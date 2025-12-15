@@ -20,6 +20,8 @@ def filter_date_time(messages, start_date=None, end_date=None):
     return filtered
 
 #TODO: includes words from list, should exclude (currently including for search purposes)
+#TODO: option for with and without regex word boundaries?
+#TODO: concatenate phrases that aren't quite next to each other in a sentence (e.g. "I'm German")
 def filter_words_phrases(messages, word_list):
     filtered = []
     for msg in messages:
@@ -92,30 +94,30 @@ def filter_dms(channel_info, index_info, dm_list):
 def main():
     
     '''Links'''
-    parent_folder = Path('Messages')
-    all_filtered_messages = []
+    # parent_folder = Path('Messages')
+    # all_filtered_messages = []
     
-    for folder in parent_folder.iterdir():
-        if not folder.is_dir(): # skip index.json
-            continue
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir(): # skip index.json
+    #         continue
         
-        messages_path = folder / 'messages.json'
-        if not messages_path.exists(): # skip folders that don't have messages.json
-            continue
+    #     messages_path = folder / 'messages.json'
+    #     if not messages_path.exists(): # skip folders that don't have messages.json
+    #         continue
         
-        with open(messages_path, 'r', encoding='utf-8') as f: 
-            messages = json.load(f)
+    #     with open(messages_path, 'r', encoding='utf-8') as f: 
+    #         messages = json.load(f)
         
-        # with links:
-        msg_with_links = filter_links(messages, exclude_links=False)
-        all_filtered_messages.extend(msg_with_links)
+    #     # with links:
+    #     msg_with_links = filter_links(messages, exclude_links=False)
+    #     all_filtered_messages.extend(msg_with_links)
         
-        # without links:
-        # msg_without_links = filter_links(messages, exclude_links=True)
-        # all_filtered_messages.extend(msg_without_links)
+    #     # without links:
+    #     # msg_without_links = filter_links(messages, exclude_links=True)
+    #     # all_filtered_messages.extend(msg_without_links)
     
-    with open("new_messages.json", "w", encoding='utf-8') as f:
-        json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
+    # with open("new_messages.json", "w", encoding='utf-8') as f:
+    #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
         
     
     '''Searching for messages with key words'''
@@ -250,10 +252,23 @@ def main():
     #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
     
     '''Datetime'''
-    # start_date = datetime(2023, 5, 30)
+    parent_folder = Path('Messages')
+    new_folder = Path('Messages_dates_filtered')
+    start_date = datetime(2023, 5, 30) # Y/MM/DD
     # end_date = datetime(2024, 1, 12)
-    # msg_date_filtered = filter_date_time(messages, start_date, end_date)
     
+    for folder in parent_folder.iterdir():
+        if not folder.is_dir():
+            continue
+        with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+           messages = json.load(f)
+        
+        
+        if filter_date_time(messages, start_date):
+            destination = new_folder / folder.name # .name because folder is the whole path, including Messages
+            shutil.copytree(folder, destination)
+          
+        
     
     
     

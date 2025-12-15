@@ -92,15 +92,21 @@ def main():
     parent_folder = Path("Messages")
     
     for folder in parent_folder.iterdir():
-        if folder.is_dir():
-            with open(f'{folder}/channel.json', 'r') as f:
-                channel_info = json.load(f)
-            
-            recipients = channel_info.get("recipients")
-            if recipients:
-                name = recipients[0]
-                if "Deleted User" in name:
-                    print(folder)
+        if not folder.is_dir(): # skip index.json
+            continue
+        
+        with open(f'{folder}/channel.json', 'r') as f:
+            channel_info = json.load(f)
+        
+        recipients = channel_info.get("recipients")
+        if not recipients: # guilds don't have this key
+            continue
+        
+        name = recipients[0]
+        if "Deleted User" not in name:
+            continue
+        
+        print(folder)
     
     '''Searching for particular folder'''
     # parent_folder = Path("Messages")

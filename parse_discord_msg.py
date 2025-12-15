@@ -65,44 +65,60 @@ def filter_dms(channel_info, index_info, dm_list):
 
             
 def main():
-    
-    '''DMs'''
-    #TODO: index_list has many repeats because of main entry point (doesn't affect functionality)
-    # dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
-    
-    # parent_folder = Path("dms_test")
-    # new_folder = Path('dms_filtered')
-    
-    # with open('index.json', 'r') as f:
-    #     index_info = json.load(f)
-    
-    # for folder in parent_folder.iterdir():
-    #     if folder.is_dir(): # for index.json
-    #         with open(f'{folder}/channel.json', 'r') as f:
-    #             channel_info = json.load(f)
-            
-    #         if filter_dms(channel_info, index_info, dm_list):
-    #             destination = new_folder / folder
-    #             shutil.copytree(folder, destination)
-    
-    
-    # Now just copy every channel with those ids into a new messages folder
-    
-    '''Searching for deleted Group DMs'''
-    parent_folder = Path("Messages")
+    word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
+    parent_folder = Path('Messages')
+    all_filtered_messages = []
     
     for folder in parent_folder.iterdir():
         if not folder.is_dir(): # skip index.json
             continue
         
-        with open(f'{folder}/channel.json', 'r') as f:
-            channel_info = json.load(f)
-            
-        type = channel_info.get("type")
-        name = channel_info.get("name")
+        messages_path = folder / 'messages.json'
+        if not messages_path.exists(): # skip folders that don't have messages.json
+            continue
         
-        if type == "GROUP_DM" and not name:
-            print(folder)
+        with open(messages_path, 'r', encoding='utf-8') as f: 
+            messages = json.load(f)
+        
+        msg_words_filtered = filter_words_phrases(messages, word_list)
+        all_filtered_messages.extend(msg_words_filtered)
+    
+    with open("new_messages.json", "w", encoding='utf-8') as f:
+        json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
+    
+    
+    '''Searching for messages with key words'''
+    # parent_folder = Path("Messages")
+    
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir(): # skip index.json
+    #         continue
+        
+    #     messages_path = folder / 'messages.json'
+    #     if not messages_path.exists(): # not every folder in Messages has a messages.json
+    #         continue
+    #     with open(messages_path, 'r', encoding='utf-8') as f:
+    #         msg_info = json.load(f)
+    #     keyword = "home"
+    #     for msg in msg_info:
+    #         if keyword in msg["Contents"]:
+    #             print(msg)
+    
+    '''Searching for deleted Group DMs'''
+    # parent_folder = Path("Messages")
+    
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir(): # skip index.json
+    #         continue
+        
+    #     with open(f'{folder}/channel.json', 'r') as f:
+    #         channel_info = json.load(f)
+            
+    #     type = channel_info.get("type")
+    #     name = channel_info.get("name")
+        
+    #     if type == "GROUP_DM" and not name:
+    #         print(folder)
     
     '''Searching for deleted DMs'''
     # parent_folder = Path("Messages")
@@ -135,8 +151,29 @@ def main():
     #         if name == "Book Club":
     #             print(folder)
     
-    #TODO: handle index.json (it's a file, not folder)???
-    '''Guilds/Servers'''  
+    
+    '''DMs'''
+    #TODO: index_list has many repeats because of main entry point (doesn't affect functionality)
+    # dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
+    
+    # parent_folder = Path("dms_test")
+    # new_folder = Path('dms_filtered')
+    
+    # with open('index.json', 'r') as f:
+    #     index_info = json.load(f)
+    
+    # for folder in parent_folder.iterdir():
+    #     if folder.is_dir(): # for index.json
+    #         with open(f'{folder}/channel.json', 'r') as f:
+    #             channel_info = json.load(f)
+            
+    #         if filter_dms(channel_info, index_info, dm_list):
+    #             destination = new_folder / folder
+    #             shutil.copytree(folder, destination)
+    
+    
+    '''Guilds/Servers''' 
+    #TODO: handle index.json 
     # guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
     
     # parent_folder = Path("Messages_test")

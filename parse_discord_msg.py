@@ -76,12 +76,13 @@ def main():
         index_info = json.load(f)
     
     for folder in parent_folder.iterdir():
-        with open(f'{folder}/channel.json', 'r') as f:
-            channel_info = json.load(f)
-        
-        if filter_dms(channel_info, index_info, dm_list):
-            destination = new_folder / folder
-            shutil.copytree(folder, destination)
+        if folder.is_dir(): # for index.json
+            with open(f'{folder}/channel.json', 'r') as f:
+                channel_info = json.load(f)
+            
+            if filter_dms(channel_info, index_info, dm_list):
+                destination = new_folder / folder
+                shutil.copytree(folder, destination)
     
     
     

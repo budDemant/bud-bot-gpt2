@@ -41,7 +41,31 @@ def filter_emojis(messages):
     return filtered
 
 
+def filter_links(messages, exclude_links=False): # if True, excludes msg with links
+    # Regex pattern to match URLs (http/https)
+    url_pattern = re.compile(
+        r'https?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)',  # path
+        re.IGNORECASE
+    )
+    
+    filtered = []
+    for msg in messages:
+        content = msg["Contents"]
+        has_link = bool(url_pattern.search(content))
+        
+        if has_link != exclude_links:
+            filtered.append(msg)
+    
+    return filtered
+
+
 '''Input a list of guild names and channel info dict, returns True if guild name matches'''
+#TODO: What if a user only wants certain channels from a guild?
 def filter_guilds(channel_info, guild_list):
     guild = channel_info.get("guild")
     if not guild:
@@ -63,11 +87,11 @@ def filter_dms(channel_info, index_info, dm_list):
     if "DM" in type and id in index_list:
         return True
     
-    
 
             
 def main():
-    word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
+    
+    '''Links'''
     parent_folder = Path('Messages')
     all_filtered_messages = []
     
@@ -82,12 +106,17 @@ def main():
         with open(messages_path, 'r', encoding='utf-8') as f: 
             messages = json.load(f)
         
-        msg_words_filtered = filter_words_phrases(messages, word_list)
-        all_filtered_messages.extend(msg_words_filtered)
+        # with links:
+        msg_with_links = filter_links(messages, exclude_links=False)
+        all_filtered_messages.extend(msg_with_links)
+        
+        # without links:
+        # msg_without_links = filter_links(messages, exclude_links=True)
+        # all_filtered_messages.extend(msg_without_links)
     
     with open("new_messages.json", "w", encoding='utf-8') as f:
         json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
-    
+        
     
     '''Searching for messages with key words'''
     # parent_folder = Path("Messages")
@@ -200,13 +229,30 @@ def main():
     
     '''Words/Phrases'''
     # word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
-    # msg_words_filtered = filter_words_phrases(messages, word_list)
+    # parent_folder = Path('Messages')
+    # all_filtered_messages = []
+    
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir(): # skip index.json
+    #         continue
+        
+    #     messages_path = folder / 'messages.json'
+    #     if not messages_path.exists(): # skip folders that don't have messages.json
+    #         continue
+        
+    #     with open(messages_path, 'r', encoding='utf-8') as f: 
+    #         messages = json.load(f)
+        
+    #     msg_words_filtered = filter_words_phrases(messages, word_list)
+    #     all_filtered_messages.extend(msg_words_filtered)
+    
+    # with open("new_messages.json", "w", encoding='utf-8') as f:
+    #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
     
     '''Datetime'''
     # start_date = datetime(2023, 5, 30)
     # end_date = datetime(2024, 1, 12)
     # msg_date_filtered = filter_date_time(messages, start_date, end_date)
-    
     
     
     

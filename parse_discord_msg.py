@@ -206,18 +206,19 @@ def main():
     
     
     '''Guilds/Servers''' 
-    #TODO: handle index.json 
     # guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
     
-    # parent_folder = Path("Messages_test")
-    # new_folder = Path('Messages_filtered')
+    # parent_folder = Path("Messages_dates_filtered")
+    # new_folder = Path('Messages_dates_guilds')
     
     # for folder in parent_folder.iterdir():
-    #     with open(f'{folder}/channel.json', 'r') as f:
+    #     if not folder.is_dir():
+    #         continue
+    #     with open(f'{folder}/channel.json', 'r', encoding='utf-8') as f:
     #         channel_info = json.load(f)
         
     #     if filter_guilds(channel_info, guild_list):
-    #         destination = new_folder / folder
+    #         destination = new_folder / folder.name
     #         shutil.copytree(folder, destination)
     
     '''Emojis'''
@@ -231,7 +232,7 @@ def main():
     
     '''Words/Phrases'''
     # word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
-    # parent_folder = Path('Messages')
+    # parent_folder = Path('Messages_dates_filtered')
     # all_filtered_messages = []
     
     # for folder in parent_folder.iterdir():
@@ -252,7 +253,8 @@ def main():
     #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
     
     '''Datetime'''
-    parent_folder = Path('Messages')
+    #TODO: This is completely removing folders that contain these dates instead of just replacing the jsons
+    parent_folder = Path('Messages_date_test')
     new_folder = Path('Messages_dates_filtered')
     start_date = datetime(2023, 5, 30) # Y/MM/DD
     # end_date = datetime(2024, 1, 12)
@@ -262,11 +264,13 @@ def main():
             continue
         with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
            messages = json.load(f)
-        
-        
+        date_filtered = filter_date_time(messages, start_date)
         if filter_date_time(messages, start_date):
             destination = new_folder / folder.name # .name because folder is the whole path, including Messages
             shutil.copytree(folder, destination)
+            with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
+                json.dump(date_filtered, f, indent=4, ensure_ascii=False) 
+            
           
         
     

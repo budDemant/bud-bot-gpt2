@@ -20,7 +20,7 @@ def filter_date_time(messages, start_date=None, end_date=None):
     return filtered
 
 #TODO: includes words from list, should exclude (currently including for search purposes)
-#TODO: option for with and without regex word boundaries?
+#TODO: case sensitive and match whole word option (regex word boundaries on/off)
 #TODO: concatenate phrases that aren't quite next to each other in a sentence (e.g. "I'm German")
 def filter_words_phrases(messages, word_list):
     filtered = []
@@ -93,8 +93,15 @@ def filter_dms(channel_info, index_info, dm_list):
             
 def main():
     
+    #TODO: main entry point that combines every function. Guild and DMs need to be included together
+    
+    
+    
+    
+    
+    
+    
     '''Links'''
-    #TODO: main is inclusive, not exclusive
     # parent_folder = Path('Messages')
     # all_filtered_messages = []
     
@@ -110,15 +117,30 @@ def main():
     #         messages = json.load(f)
         
     #     # with links:
-    #     msg_with_links = filter_links(messages, exclude_links=False)
-    #     all_filtered_messages.extend(msg_with_links)
+    #     # msg_with_links = filter_links(messages, exclude_links=False)
+    #     # all_filtered_messages.extend(msg_with_links)
         
     #     # without links:
-    #     # msg_without_links = filter_links(messages, exclude_links=True)
-    #     # all_filtered_messages.extend(msg_without_links)
+    #     msg_without_links = filter_links(messages, exclude_links=True)
+    #     all_filtered_messages.extend(msg_without_links)
     
     # with open("new_messages.json", "w", encoding='utf-8') as f:
     #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
+    '''Links'''
+    parent_folder = Path('Messages_guilds_dms_dates_emojis')
+    new_folder = Path('Messages_guilds_dms_dates_emojis_links')
+
+    for folder in parent_folder.iterdir():
+        if not folder.is_dir():
+            continue
+        with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+            messages = json.load(f)
+        links_filtered = filter_links(messages, exclude_links=True)
+        if links_filtered:  # only copy if there are messages left
+            destination = new_folder / folder.name
+            shutil.copytree(folder, destination)
+            with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
+                json.dump(links_filtered, f, indent=4, ensure_ascii=False)
         
     
     '''Searching for messages with key words'''
@@ -191,8 +213,8 @@ def main():
     #TODO: index_list has many repeats because of main entry point (doesn't affect functionality)
     # dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
     
-    # parent_folder = Path("dms_test")
-    # new_folder = Path('dms_filtered')
+    # parent_folder = Path("Messages")
+    # new_folder = Path('Messages_guilds')
     
     # with open('index.json', 'r') as f:
     #     index_info = json.load(f)
@@ -211,8 +233,8 @@ def main():
     #TODO: server names shouldn't have to be exact (e.g. "movie type" vs "movie type server")
     # guild_list = [line.strip().lower() for line in open('filtered_guilds.txt', 'r', encoding='utf-8')] 
     
-    # parent_folder = Path("Messages_dates_filtered")
-    # new_folder = Path('Messages_dates_guilds')
+    # parent_folder = Path("Messages")
+    # new_folder = Path('Messages_guilds')
     
     # for folder in parent_folder.iterdir():
     #     if not folder.is_dir():
@@ -225,40 +247,47 @@ def main():
     #         shutil.copytree(folder, destination)
     
     '''Emojis'''
-    # with open('filter_emoji_test/messages.json', 'r', encoding='utf-8') as f: # Windows uses default cp1252 encoding, which can't handle Unicode/special chars
-    #     messages = json.load(f)
+    # parent_folder = Path('Messages_guilds_dms_dates')
+    # new_folder = Path('Messages_guilds_dms_dates_emojis')
     
-    # msg_emojis_filtered = filter_emojis(messages)
     
-    # with open("new_messages.json", "w", encoding='utf-8') as f:
-    #     json.dump(msg_emojis_filtered, f, indent=4, ensure_ascii=False)
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir():
+    #         continue
+    #     with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+    #        messages = json.load(f)
+    #     emojis_filtered = filter_emojis(messages)
+    #     if filter_emojis(messages):
+    #         destination = new_folder / folder.name # .name because folder is the whole path, including Messages
+    #         shutil.copytree(folder, destination)
+    #         with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
+    #             json.dump(emojis_filtered, f, indent=4, ensure_ascii=False) 
     
     '''Words/Phrases'''
-    word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
-    parent_folder = Path('Messages_dates_guilds')
-    all_filtered_messages = []
+    # word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
+    # parent_folder = Path('Messages_dates_guilds')
+    # all_filtered_messages = []
     
-    for folder in parent_folder.iterdir():
-        if not folder.is_dir(): # skip index.json
-            continue
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir(): # skip index.json
+    #         continue
         
-        messages_path = folder / 'messages.json'
-        if not messages_path.exists(): # skip folders that don't have messages.json
-            continue
+    #     messages_path = folder / 'messages.json'
+    #     if not messages_path.exists(): # skip folders that don't have messages.json
+    #         continue
         
-        with open(messages_path, 'r', encoding='utf-8') as f: 
-            messages = json.load(f)
+    #     with open(messages_path, 'r', encoding='utf-8') as f: 
+    #         messages = json.load(f)
         
-        msg_words_filtered = filter_words_phrases(messages, word_list)
-        all_filtered_messages.extend(msg_words_filtered)
+    #     msg_words_filtered = filter_words_phrases(messages, word_list)
+    #     all_filtered_messages.extend(msg_words_filtered)
     
-    with open("new_messages.json", "w", encoding='utf-8') as f:
-        json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
+    # with open("new_messages.json", "w", encoding='utf-8') as f:
+    #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
     
     '''Datetime'''
-    #TODO: This is completely removing folders that contain these dates instead of just replacing the jsons
-    # parent_folder = Path('Messages')
-    # new_folder = Path('Messages_dates_filtered')
+    # parent_folder = Path('Messages_guilds_dms')
+    # new_folder = Path('Messages_guilds_dms_dates')
     # start_date = datetime(2023, 5, 30) # Y/MM/DD
     # # end_date = datetime(2024, 1, 12)
     

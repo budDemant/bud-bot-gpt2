@@ -93,12 +93,23 @@ def filter_dms(channel_info, index_info, dm_list):
             
 def main():
     
-    #TODO: main entry point that combines every function. Guild and DMs need to be included together
+    #TODO: main entry point that combines every function.
+    #TODO: I found a bot channel, how should I automatically filter these out??
     
     
+    parent_folder = Path('Messages_guilds_dms_dates_emojis_links_words')
+    
+    for folder in parent_folder.iterdir():
+        with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+            messages = json.load(f)
+    
+        for msg in messages:
+            # print(msg["Contents"])
+            with open('final_output.txt', 'a', encoding='utf-8') as f:
+                f.write(msg["Contents"] + '\n')
     
     
-    
+    # dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
     
     
     '''Links'''
@@ -285,20 +296,20 @@ def main():
     # with open("new_messages.json", "w", encoding='utf-8') as f:
     #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False)
     '''Word/Phrases'''
-    parent_folder = Path('Messages_guilds_dms_dates_emojis_links')
-    new_folder = Path('Messages_guilds_dms_dates_emojis_links_words')
-    word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
-    for folder in parent_folder.iterdir():
-        if not folder.is_dir():
-            continue
-        with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
-            messages = json.load(f)
-        words_filtered = filter_words_phrases(messages, word_list)
-        if words_filtered:  # only copy if there are messages left
-            destination = new_folder / folder.name
-            shutil.copytree(folder, destination)
-            with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
-                json.dump(words_filtered, f, indent=4, ensure_ascii=False) 
+    # parent_folder = Path('Messages_guilds_dms_dates_emojis_links')
+    # new_folder = Path('Messages_guilds_dms_dates_emojis_links_words')
+    # word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir():
+    #         continue
+    #     with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+    #         messages = json.load(f)
+    #     words_filtered = filter_words_phrases(messages, word_list)
+    #     if words_filtered:  # only copy if there are messages left
+    #         destination = new_folder / folder.name
+    #         shutil.copytree(folder, destination)
+    #         with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
+    #             json.dump(words_filtered, f, indent=4, ensure_ascii=False) 
     
     '''Datetime'''
     # parent_folder = Path('Messages_guilds_dms')

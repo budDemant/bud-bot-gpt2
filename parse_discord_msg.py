@@ -89,6 +89,23 @@ def filter_dms(channel_info, index_info, dm_list):
     if "DM" in type and id in index_list:
         return True
     
+def filter_mentions(messages):
+    # Pattern matches:
+    # <@USER_ID> - user mention
+    # <@!USER_ID> - user mention with nickname
+    # <#CHANNEL_ID> - channel mention
+    # <@&ROLE_ID> - role mention
+    mention_pattern = re.compile(r'<@!?\d+>|<#\d+>|<@&\d+>')
+    
+    filtered = []
+    for msg in messages:
+        clean_content = mention_pattern.sub('', msg["Contents"])
+        if clean_content.strip():  # if there's text left
+            msg_copy = msg.copy()
+            msg_copy["Contents"] = clean_content.strip()
+            filtered.append(msg_copy)
+    return filtered
+    
 
             
 def main():
@@ -96,8 +113,8 @@ def main():
     #TODO: main entry point that combines every function.
     #TODO: I found a bot channel, how should I automatically filter these out??
     
-    
-    parent_folder = Path('Messages_guilds_dms_dates_emojis_links_words')
+    '''Final output to .txt file'''
+    parent_folder = Path('Messages_guilds_dms_dates_emojis_links_words_mentions')
     
     for folder in parent_folder.iterdir():
         with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
@@ -109,8 +126,23 @@ def main():
                 f.write(msg["Contents"] + '\n')
     
     
-    # dm_list = [line.strip().lower() for line in open('filtered_dms.txt', 'r', encoding='utf-8')] 
     
+    '''Mentions'''
+    # parent_folder = Path('Messages_guilds_dms_dates_emojis_links_words')
+    # new_folder = Path('Messages_guilds_dms_dates_emojis_links_words_mentions')
+    
+    
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir():
+    #         continue
+    #     with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+    #        messages = json.load(f)
+    #     mentions_filtered = filter_mentions(messages)
+    #     if filter_mentions(messages):
+    #         destination = new_folder / folder.name # .name because folder is the whole path, including Messages
+    #         shutil.copytree(folder, destination)
+    #         with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
+    #             json.dump(mentions_filtered, f, indent=4, ensure_ascii=False) 
     
     '''Links'''
     # parent_folder = Path('Messages')

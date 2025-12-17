@@ -26,7 +26,7 @@ def filter_words_phrases(messages, word_list):
     filtered = []
     for msg in messages:
         content_lower = msg["Contents"].lower()
-        if any(re.search(r'\b' + re.escape(word) + r'\b', content_lower) for word in word_list):
+        if not any(re.search(r'\b' + re.escape(word) + r'\b', content_lower) for word in word_list):
             filtered.append(msg)
     
     return filtered
@@ -127,20 +127,20 @@ def main():
     # with open("new_messages.json", "w", encoding='utf-8') as f:
     #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
     '''Links'''
-    parent_folder = Path('Messages_guilds_dms_dates_emojis')
-    new_folder = Path('Messages_guilds_dms_dates_emojis_links')
+    # parent_folder = Path('Messages_guilds_dms_dates_emojis')
+    # new_folder = Path('Messages_guilds_dms_dates_emojis_links')
 
-    for folder in parent_folder.iterdir():
-        if not folder.is_dir():
-            continue
-        with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
-            messages = json.load(f)
-        links_filtered = filter_links(messages, exclude_links=True)
-        if links_filtered:  # only copy if there are messages left
-            destination = new_folder / folder.name
-            shutil.copytree(folder, destination)
-            with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
-                json.dump(links_filtered, f, indent=4, ensure_ascii=False)
+    # for folder in parent_folder.iterdir():
+    #     if not folder.is_dir():
+    #         continue
+    #     with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+    #         messages = json.load(f)
+    #     links_filtered = filter_links(messages, exclude_links=True)
+    #     if links_filtered:  # only copy if there are messages left
+    #         destination = new_folder / folder.name
+    #         shutil.copytree(folder, destination)
+    #         with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
+    #             json.dump(links_filtered, f, indent=4, ensure_ascii=False)
         
     
     '''Searching for messages with key words'''
@@ -283,7 +283,22 @@ def main():
     #     all_filtered_messages.extend(msg_words_filtered)
     
     # with open("new_messages.json", "w", encoding='utf-8') as f:
-    #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False) 
+    #     json.dump(all_filtered_messages, f, indent=4, ensure_ascii=False)
+    '''Word/Phrases'''
+    parent_folder = Path('Messages_guilds_dms_dates_emojis_links')
+    new_folder = Path('Messages_guilds_dms_dates_emojis_links_words')
+    word_list = [line.strip().lower() for line in open('filtered_words.txt', 'r', encoding='utf-8')] 
+    for folder in parent_folder.iterdir():
+        if not folder.is_dir():
+            continue
+        with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
+            messages = json.load(f)
+        words_filtered = filter_words_phrases(messages, word_list)
+        if words_filtered:  # only copy if there are messages left
+            destination = new_folder / folder.name
+            shutil.copytree(folder, destination)
+            with open(f'{destination}/messages.json', "w", encoding='utf-8') as f:
+                json.dump(words_filtered, f, indent=4, ensure_ascii=False) 
     
     '''Datetime'''
     # parent_folder = Path('Messages_guilds_dms')

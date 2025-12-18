@@ -2,3 +2,12 @@
 
 .env
 venv
+
+# checkpoint
+*.pt
+
+# Python
+__pycache__/
+
+# Text files for documenting results
+*.txt

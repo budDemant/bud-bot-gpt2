@@ -12,8 +12,11 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 
+from model_wrapper import DiscordGPT
+
 
 client = commands.Bot(command_prefix = '!', intents=discord.Intents.all())
+gpt_model = DiscordGPT(checkpoint_path='out-discord/ckpt.pt', device='cuda')
 
 @client.event
 async def on_ready():
@@ -30,6 +33,22 @@ async def on_message(message):
     if "bud" in contentLower:
         await message.channel.send("huh")
     await client.process_commands(message)
+    
+@client.command(name='ask')
+async def ask_gpt(ctx, *, question):
+    """Respond to user questions"""
+    prompt = f"Q: {question}\nA:" # Add context later?
+    
+    response = gpt_model.generate(
+        prompt, 
+        max_new_tokens=100,  # concise
+        temperature=0.95 # 1.2 is creative/random, 0.7 is more coherent, but can be repetitive
+    )
+    
+    # Clean up response (stop at newlines for conciseness)
+    response = response.split('\n')[0]
+    
+    await ctx.send(response)
     
 client.run(os.environ.get("BOT_KEY"))
 

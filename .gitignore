@@ -11,3 +11,6 @@ __pycache__/
 
 # Text files for documenting results
 *.txt
+
+# JSON
+*.json

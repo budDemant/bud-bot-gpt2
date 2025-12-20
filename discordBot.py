@@ -31,19 +31,6 @@ async def on_ready():
     print("Bud Bot Online")
     print("*********************")
     
-    # Clear all slash commands
-    client.tree.clear_commands(guild=None)  # Clear global commands
-    await client.tree.sync()
-    print("Global slash commands cleared")
-    
-    # clear for all guilds the bot is in
-    for guild in client.guilds:
-        client.tree.clear_commands(guild=guild)
-        await client.tree.sync(guild=guild)
-        print(f"Cleared commands for guild: {guild.name}")
-    
-    print("All slash commands cleared/synced")
-    
 @client.command()
 async def hello(ctx):
     await ctx.send("This is Bud Bot")

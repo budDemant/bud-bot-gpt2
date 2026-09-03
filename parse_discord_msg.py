@@ -115,15 +115,33 @@ def main():
     
     '''Final output to .txt file'''
     parent_folder = Path('Messages_guilds_dms_dates_emojis_links_words_mentions')
-    
+
+    # collect messages with timestamps
+    all_messages = []
     for folder in parent_folder.iterdir():
         with open(f'{folder}/messages.json', 'r', encoding='utf-8') as f:
             messages = json.load(f)
-    
-        for msg in messages:
-            # print(msg["Contents"])
-            with open('final_output.txt', 'a', encoding='utf-8') as f:
-                f.write(msg["Contents"] + '\n')
+        all_messages.extend(messages)  # combine all channels
+
+    # sort by timestamp
+    all_messages.sort(key=lambda x: datetime.strptime(x["Timestamp"], "%Y-%m-%d %H:%M:%S"))
+
+    # write with conversation breaks
+    TIME_GAP_MINUTES = 60
+    prev_timestamp = None
+
+    with open('final_output.txt', 'w', encoding='utf-8') as f:
+        for msg in all_messages:
+            current_timestamp = datetime.strptime(msg["Timestamp"], "%Y-%m-%d %H:%M:%S")
+            
+            # if time gap is large, add blank line(s) for conversation break
+            if prev_timestamp:
+                time_diff = (current_timestamp - prev_timestamp).total_seconds() / 60
+                if time_diff > TIME_GAP_MINUTES:
+                    f.write('\n')  # blank line between conversations
+            
+            f.write(msg["Contents"] + '\n')
+            prev_timestamp = current_timestamp
     
     
     

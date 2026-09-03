@@ -1,3 +1,16 @@
+Messages
+.venv
+
+# Sample message folders for testing functions
+filter_date_test
+filter_date_test_2
+sample_msg_test
+
+# Text files for personal goals and data
+*.txt
+
+# JSON files (Discord msg data)
+*.json
 
 
 .env
